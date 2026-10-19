@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 test('seminar navigation, chapter content, keyboard, and presentation', async({page})=>{
- const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('http://127.0.0.1:5173/PantherFxSeminar/');await page.locator('#start').click();
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('http://127.0.0.1:5173/PantherFxSeminar/');if(await page.locator('#complete-session').count())await page.locator('#complete-session').click();await page.locator('#start').click();
  await expect(page.locator('h1')).toContainText('master the trader');
  for(let i=0;i<6;i++){
  await page.locator('[data-chapter]').nth(i).click();
@@ -10,7 +10,7 @@ test('seminar navigation, chapter content, keyboard, and presentation', async({p
  await page.keyboard.press('ArrowLeft');await expect(page.locator('.lead')).toContainText('save a screenshot');
  await page.locator('#present').click();await expect(page.locator('body')).toHaveClass('presenting');
  await page.keyboard.press('Escape');await expect(page.locator('body')).not.toHaveClass('presenting');
- await page.locator('.brand').click();await page.locator('#start').click();await expect(page.locator('h1')).toContainText('master the trader');
+ await page.locator('.brand').click();if(await page.locator('#complete-session').count())await page.locator('#complete-session').click();await page.locator('#start').click();await expect(page.locator('h1')).toContainText('master the trader');
  for(const [width,height] of [[1440,1000],[1920,1080],[390,844]]){await page.setViewportSize({width,height});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();await page.screenshot({path:`/tmp/pantherfx-${width}.png`,fullPage:true});}
  expect(errors).toEqual([]);
 });
