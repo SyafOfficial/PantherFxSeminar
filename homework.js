@@ -1,0 +1,9 @@
+import {whatsappNumber} from './homework-config.js';
+const form=document.querySelector('#homework');
+const status=document.querySelector('#delivery-status');
+status.textContent=whatsappNumber?'Your homework will open in your coach’s WhatsApp chat. Review it and tap Send there.':'After reviewing, open WhatsApp and choose your coach’s chat. Review the message and tap Send.';
+function answers(){return 'PANTHERFX · SEMINAR HOMEWORK\n\n'+[...new FormData(form)].filter(([name])=>name!=='Consent').map(([name,value])=>`${name}\n${value||'(unanswered)'}`).join('\n\n');}
+form.addEventListener('submit',event=>{event.preventDefault();const body=answers();document.querySelector('#answer-preview').value=body;document.querySelector('#whatsapp-link').href=`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(body)}`;document.querySelector('#answer-review').hidden=false;document.querySelector('#answer-review').scrollIntoView({behavior:'smooth'});document.querySelector('#whatsapp-link').focus();});
+form.addEventListener('input',()=>{document.querySelector('#answer-review').hidden=true;});
+document.querySelector('#copy-answers').addEventListener('click',async()=>{const preview=document.querySelector('#answer-preview');try{await navigator.clipboard.writeText(preview.value);document.querySelector('#copy-status').textContent='Copied. Paste into your coach’s chat and tap Send.';}catch{preview.focus();preview.select();document.querySelector('#copy-status').textContent='Select and copy the message above, then paste it into WhatsApp.';}});
+document.querySelector('#download-answers').addEventListener('click',()=>{const url=URL.createObjectURL(new Blob([answers()],{type:'text/plain;charset=utf-8'}));const link=document.createElement('a');link.href=url;link.download='PantherFX-homework.txt';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
